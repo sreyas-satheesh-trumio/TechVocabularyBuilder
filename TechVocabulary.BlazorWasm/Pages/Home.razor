@@ -1,7 +1,55 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<div class="home-container">
+    <h1>Tech Vocabulary Builder 🚀</h1>
 
-<h1>Hello, world!</h1>
+    <p class="subtitle">
+        Learn technical concepts like API, JWT, Docker through
+        simple explanations and fun quizzes.
+    </p>
 
-Welcome to your new app.
+    <div class="action-buttons">
+        <a class="btn btn-primary" href="/">
+            📘 Learn Topics
+        </a>
+
+        <a class="btn btn-success" href="/">
+            🎯 Play Guess Game
+        </a>
+    </div>
+</div>
+
+<style>
+    .home-container {
+        text-align: center;
+        margin-top: 80px;
+    }
+
+    .subtitle {
+        font-size: 18px;
+        margin: 20px 0 40px 0;
+        color: #555;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        color: white;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+    }
+</style>

@@ -5,7 +5,6 @@ using System.IdentityModel.Tokens.Jwt;
 
 [ApiController]
 [Route("api/game")]
-[Authorize(Roles = "User")]
 public class GameController : ControllerBase
 {
     private readonly IGameService _gameService;
@@ -13,6 +12,11 @@ public class GameController : ControllerBase
     public GameController(IGameService gameService)
     {
         _gameService = gameService;
+    }
+
+    private int GetUserId()
+    {
+        return 1; // TEMP
     }
 
     [HttpGet("question")]
@@ -42,3 +46,4 @@ public class GameController : ControllerBase
         return Ok(_gameService.CalculateScore(userId));
     }
 }
+

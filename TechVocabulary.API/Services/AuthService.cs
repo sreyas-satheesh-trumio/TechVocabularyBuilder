@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TechVocabulary.API.Models;
+using TechVocabulary.API.Services;
 
 public class AuthService : IAuthService
 {
@@ -19,25 +20,25 @@ public class AuthService : IAuthService
 
     public async Task<string?> LoginAsync(string username, string password)
     {
-        var user = await _context.Users
+        var user = await _context.EndUsers
             .FirstOrDefaultAsync(u => u.Username == username);
 
         if (user == null)
             return null;
 
-        if (!PasswordService.Verify(password, user.PasswordHash))
+        if (!PasswordService.Verify(password, user.Password))
             return null;
 
         return GenerateToken(user);
     }
 
-    private string GenerateToken(User user)
+    private string GenerateToken(EndUser user)
     {
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role)
+            new Claim(ClaimTypes.Role, user.Role.ToString())
         };
 
         var key = new SymmetricSecurityKey(

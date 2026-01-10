@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using TechVocabulary.API.Services;
-using TechVocabulary.Contracts.Auth;
 
 [ApiController]
 [Route("api/auth")]

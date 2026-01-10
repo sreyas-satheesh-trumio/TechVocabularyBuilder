@@ -16,4 +16,6 @@ builder.Services.AddScoped(sp =>
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+builder.Services.AddScoped<IAuthApiService, AuthApiService>();
+
 await builder.Build().RunAsync();

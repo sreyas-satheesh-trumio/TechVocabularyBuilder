@@ -28,29 +28,67 @@
     </div>
 </div>
 
+@if (showCompletedPopup)
+{
+    <div class="modal-backdrop">
+        <div class="modal-card">
+            <h2>🚫 Quiz Already Completed</h2>
+            <p>
+                You have already attempted this quiz.<br />
+                You cannot retake it again.
+            </p>
+
+            <div class="modal-actions">
+                <button class="btn-primary" @onclick="GoToResult">
+                    📊 View Result
+                </button>
+                <button class="btn-secondary" @onclick="ClosePopup">
+                    ❌ Close
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
+    private bool showCompletedPopup = false;
+
     private async Task StartGameAsync()
     {
         try
         {
             var question =
-                await Http.GetFromJsonAsync<GameQuestionResponse>("api/game/question");
+                await Http.GetFromJsonAsync<GameQuestionResponse>(
+                    "api/game/question");
 
-            if (question != null && !question.IsCompleted)
-            {
-                GameState.Reset();
-                GameState.CurrentQuestion = question;
+            if (question == null)
+                return;
 
-                Nav.NavigateTo("/game");
-            }
-            else
+            // 🔴 USER ALREADY COMPLETED QUIZ
+            if (question.IsCompleted)
             {
-                Console.WriteLine("No questions available.");
+                showCompletedPopup = true;
+                return;
             }
+
+            // ✅ START GAME
+            GameState.Reset();
+            GameState.CurrentQuestion = question;
+            Nav.NavigateTo("/game");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching game question: {ex.Message}");
         }
+    }
+
+    void ClosePopup()
+    {
+        showCompletedPopup = false;
+    }
+
+    void GoToResult()
+    {
+        Nav.NavigateTo("/game-result");
     }
 }

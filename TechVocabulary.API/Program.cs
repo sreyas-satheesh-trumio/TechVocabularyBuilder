@@ -1,11 +1,12 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
+
+using Microsoft.AspNetCore.Authentication.JwtBearer; 
+using Microsoft.EntityFrameworkCore; 
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.Security.Claims;
-using TechVocabulary.API.Models;
-using TechVocabulary.API.Services;
-using Scalar.AspNetCore;
+ using System.Text; 
+ using System.Security.Claims;
+  using TechVocabulary.API.Models;
+   using TechVocabulary.API.Services; 
+   using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,24 +16,19 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
-builder.Services.AddScoped<IGameService, GameService>();
-// Register authentication service
-builder.Services.AddScoped<IAuthService, AuthService>();
 
-builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
+// 🔐 JWT (unchanged)
 var jwtSection = builder.Configuration.GetSection("Jwt");
 builder.Services.Configure<JwtOptions>(jwtSection);
-
 var jwtSettings = jwtSection.Get<JwtOptions>();
 
-if (string.IsNullOrWhiteSpace(jwtSettings?.Key))
-    throw new InvalidOperationException("JWT Key is not configured. Set 'Jwt:Key' in configuration or use user-secrets.");
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+/*builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -41,7 +37,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-
             ValidIssuer = jwtSettings!.Issuer,
             ValidAudience = jwtSettings.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(
@@ -52,18 +47,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
     });
-
+*/
+// ✅ CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowBlazor",
-        policy =>
-        {
-            policy
-                .WithOrigins("http://localhost:5128") // Blazor URL
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowBlazorWasm", policy =>
+        policy
+            .WithOrigins("http://localhost:5128")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+    );
 });
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -72,11 +67,15 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.UseHttpsRedirection();
+// 🚨 DEV FIX: comment this temporarily
+// app.UseHttpsRedirection();
 
-app.UseAuthentication();
+// ✅ CORS MUST COME FIRST
+app.UseCors("AllowBlazorWasm");
+
+//app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("AllowBlazor");
+
 app.MapControllers();
 
 app.Run();

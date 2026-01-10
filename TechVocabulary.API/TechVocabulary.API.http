@@ -1,0 +1,6 @@
+@TechVocabulary.API_HostAddress = http://localhost:5240
+
+GET {{TechVocabulary.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

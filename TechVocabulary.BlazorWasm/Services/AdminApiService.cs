@@ -11,10 +11,36 @@ public class AdminApiService
     }
 
     public async Task AddTopicAsync(CreateTopicDto dto)
+{
+    try
     {
+        // Make the POST request
         var response = await _http.PostAsJsonAsync("api/admin/topic", dto);
-        response.EnsureSuccessStatusCode();
+
+        // Read response content as string for debugging
+        var content = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            // Log the status code and response
+            Console.WriteLine($"Error adding topic. Status: {response.StatusCode}, Response: {content}");
+            return;
+        }
+
+        Console.WriteLine("Topic added successfully!");
     }
+    catch (HttpRequestException ex)
+    {
+        // Handle network/connection issues
+        Console.WriteLine($"HTTP Request error: {ex.Message}");
+    }
+    catch (Exception ex)
+    {
+        // Handle any other errors
+        Console.WriteLine($"Unexpected error: {ex.Message}");
+    }
+}
+
 
     public async Task DeleteTopicAsync(int topicId)
     {

@@ -3,6 +3,13 @@
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Components.Forms
+@using System.Net.Http.Headers
+@using System.Text.Json
+@using System.Net.Http.Json
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <div class="login-container">
     <div class="login-card">
@@ -11,32 +18,38 @@
         <p class="subtitle">Login to continue learning tech vocabulary</p>
 
         <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
-    <DataAnnotationsValidator />
+            <DataAnnotationsValidator />
 
-    <!-- Username -->
-    <div class="form-group floating">
-        <InputText class="form-input"
-                   @bind-Value="loginModel.Username"
-                   placeholder=" " />
-        <label>Username</label>
-        <ValidationMessage For="@(() => loginModel.Username)"
-                           class="field-error" />
-    </div>
+            <!-- Username -->
+            <div class="form-group floating">
+                <InputText class="form-input"
+                           @bind-Value="loginModel.Username"
+                           placeholder=" " />
+                <label>Username</label>
+                <ValidationMessage For="@(() => loginModel.Username)"
+                                   class="field-error" />
+            </div>
 
-    <!-- Password -->
-    <div class="form-group floating">
-        <InputText type="password"
-                   class="form-input"
-                   @bind-Value="loginModel.Password"
-                   placeholder=" " />
-        <label>Password</label>
-        <ValidationMessage For="@(() => loginModel.Password)"
-                           class="field-error" />
-    </div>
+            <!-- Password -->
+            <div class="form-group floating">
+                <InputText type="password"
+                           class="form-input"
+                           @bind-Value="loginModel.Password"
+                           placeholder=" " />
+                <label>Password</label>
+                <ValidationMessage For="@(() => loginModel.Password)"
+                                   class="field-error" />
+            </div>
 
-    <button type="submit" class="btn-login">Login</button>
-</EditForm>
+            <button type="submit" class="btn-login" disabled="@isBusy">
+                @(isBusy ? "Logging in..." : "Login")
+            </button>
 
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="field-error" style="margin-top:8px">@errorMessage</div>
+            }
+        </EditForm>
 
         <div class="register-link">
             <span>New here?</span>
@@ -47,10 +60,119 @@
 
 @code {
     private LoginViewModel loginModel = new();
+    private bool isBusy = false;
+    private string? errorMessage;
 
-    private void HandleLogin()
+    private async Task HandleLogin()
     {
-        Console.WriteLine($"Login attempt: {loginModel.Username}");
+        errorMessage = null;
+        isBusy = true;
+
+        try
+        {
+            // Adjust endpoint if your API uses a different route
+            var response = await Http.PostAsJsonAsync("api/auth/login", new { Username = loginModel.Username, Password = loginModel.Password });
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var text = await response.Content.ReadAsStringAsync();
+                errorMessage = $"Login failed: {response.StatusCode} - {text}";
+                return;
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            // Try to extract token from JSON response (common shapes: { "token": "..."} or { "access_token"/"accessToken": "..." })
+            string? token = null;
+            try
+            {
+                using var doc = JsonDocument.Parse(content);
+                var root = doc.RootElement;
+                if (root.ValueKind == JsonValueKind.Object)
+                {
+                    // Common property names (including camelCase)
+                    if (TryGetString(root, "token", out var t)) token = t;
+                    else if (TryGetString(root, "access_token", out t)) token = t;
+                    else if (TryGetString(root, "accessToken", out t)) token = t;
+                    else if (TryGetString(root, "jwt", out t)) token = t;
+
+                    // Search recursively for a JWT-like string (three parts separated by '.')
+                    if (string.IsNullOrEmpty(token))
+                        token = FindJwtString(root);
+                }
+            }
+            catch
+            {
+                // response wasn't JSON, might be plain token string
+            }
+
+            if (string.IsNullOrEmpty(token))
+            {
+                // fallback: raw content as token (trim quotes if any)
+                token = content?.Trim().Trim('"');
+            }
+
+            if (string.IsNullOrEmpty(token))
+            {
+                errorMessage = "Login succeeded but no token returned by the server.";
+                return;
+            }
+
+            // Store token in localStorage and as a cookie
+            await JS.InvokeVoidAsync("localStorage.setItem", "authToken", token);
+            // set a simple cookie (adjust attributes for your environment if needed)
+            await JS.InvokeVoidAsync("eval", $"document.cookie = 'authToken={token}; path=/; Secure; SameSite=Strict';");
+
+            // Navigate to the app root (or another page)
+            Navigation.NavigateTo("/");
+
+            // Local helper functions
+            static bool TryGetString(JsonElement el, string propName, out string? value)
+            {
+                value = null;
+                if (el.TryGetProperty(propName, out var propEl) && propEl.ValueKind == JsonValueKind.String)
+                {
+                    value = propEl.GetString();
+                    return true;
+                }
+                return false;
+            }
+
+            static string? FindJwtString(JsonElement el)
+            {
+                if (el.ValueKind == JsonValueKind.String)
+                {
+                    var s = el.GetString();
+                    if (!string.IsNullOrEmpty(s) && s.Split('.').Length >= 3) return s;
+                    return null;
+                }
+                if (el.ValueKind == JsonValueKind.Object)
+                {
+                    foreach (var prop in el.EnumerateObject())
+                    {
+                        var found = FindJwtString(prop.Value);
+                        if (!string.IsNullOrEmpty(found)) return found;
+                    }
+                }
+                else if (el.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var item in el.EnumerateArray())
+                    {
+                        var found = FindJwtString(item);
+                        if (!string.IsNullOrEmpty(found)) return found;
+                    }
+                }
+                return null;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Login failed: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
     }
 
     public class LoginViewModel

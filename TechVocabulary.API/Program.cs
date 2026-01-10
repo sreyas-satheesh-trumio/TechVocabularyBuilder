@@ -28,7 +28,7 @@ var jwtSection = builder.Configuration.GetSection("Jwt");
 builder.Services.Configure<JwtOptions>(jwtSection);
 var jwtSettings = jwtSection.Get<JwtOptions>();
 
-/*builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -47,7 +47,7 @@ var jwtSettings = jwtSection.Get<JwtOptions>();
             ClockSkew = TimeSpan.Zero
         };
     });
-*/
+
 // ✅ CORS
 builder.Services.AddCors(options =>
 {
@@ -68,12 +68,12 @@ if (app.Environment.IsDevelopment())
 }
 
 // 🚨 DEV FIX: comment this temporarily
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 // ✅ CORS MUST COME FIRST
 app.UseCors("AllowBlazorWasm");
 
-//app.UseAuthentication();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

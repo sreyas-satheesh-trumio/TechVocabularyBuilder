@@ -1,50 +1,47 @@
 ﻿@page "/"
 @inject NavigationManager Nav
 
-<div class="home-wrapper">
+<div class="home-wrapper fade-in">
 
     <!-- HERO -->
     <section class="hero">
-        <div class="badge">🔥 Learn • Play • Master</div>
+        <br />
+        <span class="badge">🚀 Learn Tech the Fun Way</span>
 
         <h1 class="title">
             Tech Vocabulary Builder
         </h1>
 
         <p class="subtitle">
-            Learn technical concepts like <b>API</b>, <b>JWT</b>, <b>Docker</b>  
-            in a fun way.
+            Master <b>API</b>, <b>JWT</b>, <b>Docker</b> with
+            interactive lessons and fun quizzes.
         </p>
     </section>
 
     <!-- ACTION CARDS -->
     <section class="card-section">
 
-        <div class="card learn-card" @onclick="GoToLearn">
+        <div class="card learn-card bounce" @onclick="GoToLearn">
             <div class="icon">📘</div>
             <h3>Learn Topics</h3>
-            <p>
-                Clear explanations with real-world examples and code snippets.
-            </p>
-            <span class="card-cta">Start Learning →</span>
+            <p>Understand concepts with examples & code.</p>
+            <button class="card-btn">Start Learning</button>
         </div>
 
-        <div class="card game-card" @onclick="GoToInstructions">
+        <div class="card game-card bounce" @onclick="GoToInstructions">
             <div class="icon">🎯</div>
             <h3>Guess the Term</h3>
-            <p>
-                Test yourself with fun quizzes and boost your confidence.
-            </p>
-            <span class="card-cta">Play Now →</span>
+            <p>Quick quizzes to test your understanding.</p>
+            <button class="card-btn">Play Quiz</button>
         </div>
 
     </section>
 
-    <!-- FEATURES -->
-    <section class="features">
-        <div class="feature">⚡ Quick & Simple</div>
-        <div class="feature">🧠 Learn by Doing</div>
-        <div class="feature">🏆 Score & Improve</div>
+    <!-- MOTIVATION -->
+    <section class="motivation">
+        <div class="tip">🧠 Learn by doing</div>
+        <div class="tip">⚡ Short & effective</div>
+        <div class="tip">🏆 Improve every day</div>
     </section>
 
 </div>

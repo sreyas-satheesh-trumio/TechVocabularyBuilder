@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace TechVocabulary.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260110061818_AddTopicsTable")]
-    partial class AddTopicsTable
+    [Migration("20260110065210_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -74,6 +74,37 @@ namespace TechVocabulary.API.Migrations
                     b.ToTable("EndUsers");
                 });
 
+            modelBuilder.Entity("GameProgress", b =>
+                {
+                    b.Property<int>("GameId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GameId"));
+
+                    b.Property<DateTime>("AttemptedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TopicId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("GameId");
+
+                    b.HasIndex("TopicId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("GameProgresses");
+                });
+
             modelBuilder.Entity("Topic", b =>
                 {
                     b.Property<int>("TopicId")
@@ -113,6 +144,53 @@ namespace TechVocabulary.API.Migrations
                     b.ToTable("Topics");
                 });
 
+            modelBuilder.Entity("TopicLearned", b =>
+                {
+                    b.Property<int>("TopicLearnedId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TopicLearnedId"));
+
+                    b.Property<DateTime>("LearnedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<int>("TopicId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("TopicLearnedId");
+
+                    b.HasIndex("TopicId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TopicsLearned");
+                });
+
+            modelBuilder.Entity("GameProgress", b =>
+                {
+                    b.HasOne("Topic", "Topic")
+                        .WithMany()
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EndUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Topic");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Topic", b =>
                 {
                     b.HasOne("EndUser", "CreatedByUser")
@@ -122,6 +200,25 @@ namespace TechVocabulary.API.Migrations
                         .IsRequired();
 
                     b.Navigation("CreatedByUser");
+                });
+
+            modelBuilder.Entity("TopicLearned", b =>
+                {
+                    b.HasOne("Topic", "Topic")
+                        .WithMany()
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EndUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Topic");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

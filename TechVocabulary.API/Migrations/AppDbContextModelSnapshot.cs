@@ -97,8 +97,7 @@ namespace TechVocabulary.API.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.HasIndex("UserId", "TopicId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("GameProgresses");
                 });
@@ -165,8 +164,7 @@ namespace TechVocabulary.API.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.HasIndex("UserId", "TopicId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("TopicsLearned");
                 });

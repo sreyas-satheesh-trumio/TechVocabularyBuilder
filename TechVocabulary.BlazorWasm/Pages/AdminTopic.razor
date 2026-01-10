@@ -1,0 +1,84 @@
+@page "/admin-topics"
+
+@using TechVocabulary.Contracts.AdminDTOs
+@inject AdminApiService AdminApi
+
+<h3>Admin Panel: Manage Topics</h3>
+
+<hr />
+
+<h4>Add New Topic</h4>
+<EditForm Model="@newTopic" OnValidSubmit="HandleAddTopic">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label>Topic Name:</label>
+        <InputText class="form-control" @bind-Value="newTopic.TopicName" />
+    </div>
+
+    <div class="mb-2">
+        <label>Definition:</label>
+        <InputTextArea class="form-control" @bind-Value="newTopic.Definition" />
+    </div>
+
+    <div class="mb-2">
+        <label>Real World Usage:</label>
+        <InputTextArea class="form-control" @bind-Value="newTopic.RealWorldUsage" />
+    </div>
+
+    <div class="mb-2">
+        <label>Code Snippet:</label>
+        <InputTextArea class="form-control" @bind-Value="newTopic.CodeSnippet" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Topic</button>
+</EditForm>
+
+<hr />
+
+<h4>Delete Topic</h4>
+<div class="mb-2">
+    <label>Topic Id to Delete:</label>
+    <InputNumber class="form-control" @bind-Value="deleteTopicId" />
+</div>
+<button class="btn btn-danger" @onclick="HandleDeleteTopic">Delete Topic</button>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-info mt-2">@message</div>
+}
+
+@code {
+    private CreateTopicDto newTopic = new CreateTopicDto();
+    private int deleteTopicId;
+    private string message;
+
+    private async Task HandleAddTopic()
+    {
+        try
+        {
+            await AdminApi.AddTopicAsync(newTopic); // ✅ Use injected AdminApi
+            message = $"Topic '{newTopic.TopicName}' added successfully!";
+            newTopic = new CreateTopicDto(); // reset form
+        }
+        catch (Exception ex)
+        {
+            message = $"Error adding topic: {ex.Message}";
+        }
+    }
+
+   private async Task HandleDeleteTopic()
+{
+    try
+    {
+        await AdminApi.DeleteTopicAsync(deleteTopicId); // no assignment
+        message = $"Topic {deleteTopicId} deleted successfully!";
+    }
+    catch (Exception ex)
+    {
+        message = $"Error deleting topic: {ex.Message}";
+    }
+}
+
+}

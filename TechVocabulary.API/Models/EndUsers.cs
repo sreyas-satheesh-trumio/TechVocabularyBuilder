@@ -21,7 +21,6 @@ public class EndUser
     [StringLength(150)]
     public string Email { get; set; }
 
-    // Store HASHED password only
     [Required]
     [StringLength(255)]
     [RegularExpression(

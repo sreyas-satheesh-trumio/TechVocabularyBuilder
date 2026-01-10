@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace TechVocabulary.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260110055930_UserTableCreation")]
-    partial class UserTableCreation
+    [Migration("20260110062551_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

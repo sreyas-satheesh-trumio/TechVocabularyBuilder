@@ -1,0 +1,177 @@
+/* ===============================
+   REGISTER BACKGROUND
+================================ */
+.register-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow: hidden;
+
+    background: radial-gradient(
+        circle at top left,
+        #0f766e,
+        #042f2e,
+        #020617
+    );
+}
+
+/* ===============================
+   REGISTER CARD (DISTINCT STYLE)
+================================ */
+.register-card {
+    width: 420px;
+    padding: 42px;
+    border-radius: 20px;
+    text-align: center;
+
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(22px);
+
+    border: 1px solid rgba(255,255,255,0.15);
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,0.7),
+        inset 0 0 0 1px rgba(255,255,255,0.15);
+
+    animation: registerEnter 0.9s cubic-bezier(.2,.9,.3,1);
+}
+
+@keyframes registerEnter {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.92);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ===============================
+   HEADINGS
+================================ */
+.register-card h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ecfeff;
+    margin-bottom: 6px;
+}
+
+.register-card .subtitle {
+    font-size: 14px;
+    color: #99f6e4;
+    margin-bottom: 30px;
+}
+
+/* ===============================
+   FLOATING LABELS
+================================ */
+.form-group.floating {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.form-group.floating label {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: #99f6e4;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    padding: 0 6px;
+    background: rgba(2, 6, 23, 0.9);
+    border-radius: 6px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 16px 14px 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #ecfeff;
+
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.18);
+
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #2dd4bf;
+    box-shadow:
+        0 0 0 3px rgba(45,212,191,0.35),
+        0 0 25px rgba(45,212,191,0.5);
+}
+
+/* Floating logic */
+.form-input:focus + label,
+.form-input:not(:placeholder-shown) + label {
+    top: -9px;
+    font-size: 12px;
+    color: #5eead4;
+}
+
+/* ===============================
+   REGISTER BUTTON
+================================ */
+.btn-register {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #022c22;
+
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+
+    background: linear-gradient(
+        135deg,
+        #5eead4,
+        #2dd4bf
+    );
+
+    box-shadow: 0 20px 45px rgba(45,212,191,0.6);
+    transition: all 0.3s ease;
+}
+
+.btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 28px 65px rgba(45,212,191,0.8);
+}
+
+/* ===============================
+   LINKS
+================================ */
+.register-link {
+    margin-top: 22px;
+    font-size: 14px;
+    color: #99f6e4;
+}
+
+.register-link a {
+    color: #5eead4;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.register-link a:hover {
+    color: #ecfeff;
+    text-decoration: underline;
+}
+
+/* ===============================
+   MOBILE
+================================ */
+@media (max-width: 480px) {
+    .register-card {
+        width: 100%;
+        padding: 32px;
+    }
+}

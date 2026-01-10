@@ -1,3 +1,4 @@
+using TechVocabulary.Contracts.DTOs;
 public interface IGameService
 {
     GameQuestionResponse GetNextQuestion(int userId);

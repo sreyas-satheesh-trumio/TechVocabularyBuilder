@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-
+using TechVocabulary.Contracts.DTOs;
 public class GameService : IGameService
 {
     private readonly AppDbContext _db;

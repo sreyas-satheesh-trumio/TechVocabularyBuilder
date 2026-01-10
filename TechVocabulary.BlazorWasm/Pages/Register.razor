@@ -1,0 +1,48 @@
+@page "/register"
+@layout AuthLayout
+<div class="register-container">
+    <div class="register-card">
+
+        <h2>Create Account</h2>
+        <p class="subtitle">Join us and start your journey</p>
+
+        <form>
+
+            <div class="form-group floating">
+                <input type="text" class="form-input" placeholder=" " />
+                <label>Full Name</label>
+            </div>
+
+            <div class="form-group floating">
+                <input type="email" class="form-input" placeholder=" " />
+                <label>Email Address</label>
+            </div>
+
+            <div class="form-group floating">
+                <input type="text" class="form-input" placeholder=" " />
+                <label>Username</label>
+            </div>
+
+            <div class="form-group floating">
+                <input type="password" class="form-input" placeholder=" " />
+                <label>Password</label>
+            </div>
+
+            <div class="form-group floating">
+                <input type="password" class="form-input" placeholder=" " />
+                <label>Confirm Password</label>
+            </div>
+
+            <button type="button" class="btn-register">
+                Create Account
+            </button>
+
+        </form>
+
+        <div class="register-link">
+            Already have an account?
+            <a href="/login">Back to Login</a>
+        </div>
+
+    </div>
+</div>

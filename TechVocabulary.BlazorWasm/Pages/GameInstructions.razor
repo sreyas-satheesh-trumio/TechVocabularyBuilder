@@ -1,0 +1,50 @@
+@page "/game-instructions"
+@inject NavigationManager Nav
+@inject HttpClient Http
+@using TechVocabulary.Contracts.DTOs
+
+<div class="instructions-wrapper">
+    <h1 class="title">🎯 Guess the Term</h1>
+
+    <p class="subtitle">
+        You will be given a question and 4 options. Each correct answer gives you 1 point. All the best!
+    </p>
+
+    <ul class="instructions-list">
+        <li>📝 Read the question carefully.</li>
+        <li>🎯 Only <b>one attempt</b> per question.</li>
+        <li>⏱️ Answer as quickly as possible to maximize your score.</li>
+        <li>💡 Have fun learning technical terms like <b>API</b>, <b>JWT</b>, <b>Docker</b>!</li>
+    </ul>
+
+    <div class="start-btn-wrapper">
+        <button class="btn-start" @onclick="StartGameAsync">
+            🚀 Start Quiz
+        </button>
+    </div>
+</div>
+
+@code {
+    async Task StartGameAsync()
+    {
+        try
+        {
+            // Call backend to get the first question
+            var question = await Http.GetFromJsonAsync<GameQuestionResponse>("api/game/question");
+
+            if (question != null)
+            {
+                // TODO: store question in a GameStateService for later use in /game page
+                Nav.NavigateTo("/game");
+            }
+            else
+            {
+                Console.WriteLine("Failed to fetch first question.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching game question: {ex.Message}");
+        }
+    }
+}

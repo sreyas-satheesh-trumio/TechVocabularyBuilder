@@ -1,0 +1,191 @@
+/* ===============================
+   ROOT CONTAINER (FACEBOOK STYLE)
+================================ */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Helvetica, Arial, sans-serif;
+    background: #f0f2f5;
+    padding: 20px;
+}
+
+/* ===============================
+   LOGIN CARD
+================================ */
+.login-card {
+    width: 380px;
+    background: #ffffff;
+    padding: 28px;
+    border-radius: 8px;
+    text-align: center;
+
+    box-shadow:
+        0 2px 12px rgba(0, 0, 0, 0.15);
+
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===============================
+   BACK LINK
+================================ */
+.back-link {
+    display: inline-block;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #1877f2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* ===============================
+   HEADINGS
+================================ */
+.login-card h2 {
+    font-size: 24px;
+    color: #1c1e21;
+    margin-bottom: 6px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #606770;
+    margin-bottom: 20px;
+}
+
+/* ===============================
+   FORM GROUP
+================================ */
+.form-group {
+    margin-bottom: 14px;
+    text-align: left;
+}
+
+/* ===============================
+   INPUTS
+================================ */
+.form-input {
+    width: 100%;
+    padding: 14px 12px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: 1px solid #dddfe2;
+    background: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #1877f2;
+    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+}
+
+/* ===============================
+   FLOATING LABELS (LIGHT)
+================================ */
+.form-group.floating {
+    position: relative;
+}
+
+.form-group.floating label {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: #606770;
+    background: #ffffff;
+    padding: 0 4px;
+    pointer-events: none;
+    transition: all 0.2s ease;
+}
+
+.form-group.floating .form-input:focus + label,
+.form-group.floating .form-input:not(:placeholder-shown) + label {
+    top: -7px;
+    font-size: 12px;
+    color: #1877f2;
+}
+
+/* Adjust padding for floating labels */
+.form-group.floating .form-input {
+    padding-top: 18px;
+    padding-bottom: 10px;
+}
+
+/* ===============================
+   LOGIN BUTTON
+================================ */
+.btn-login {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+
+    background: #1877f2;
+    transition: background 0.2s ease;
+}
+
+.btn-login:hover {
+    background: #166fe5;
+}
+
+/* ===============================
+   VALIDATION
+================================ */
+.field-error {
+    color: #e41e3f;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* ===============================
+   REGISTER LINK
+================================ */
+.register-link {
+    margin-top: 18px;
+    font-size: 14px;
+    color: #1c1e21;
+}
+
+.register-link a {
+    color: #1877f2;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+/* ===============================
+   MOBILE
+================================ */
+@media (max-width: 420px) {
+    .login-card {
+        width: 100%;
+    }
+}

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 [ApiController]
 [Route("api/game")]
@@ -17,22 +19,37 @@ public class GameController : ControllerBase
         return 1; // TEMP
     }
 
+    [Authorize]
     [HttpGet("question")]
     public IActionResult GetQuestion()
     {
-        return Ok(_gameService.GetNextQuestion(GetUserId()));
+        int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+            ?? throw new UnauthorizedAccessException("User id not found in token"));
+
+        return Ok(_gameService.GetNextQuestion(userId));
     }
 
+    [Authorize]
     [HttpPost("answer")]
     public IActionResult ValidateAnswer([FromBody] AnswerRequest request)
     {
-        return Ok(_gameService.ValidateAnswer(GetUserId(), request));
+        int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+            ?? throw new UnauthorizedAccessException("User id not found in token"));
+
+        return Ok(_gameService.ValidateAnswer(userId, request));
     }
 
+    [Authorize]
     [HttpGet("score")]
     public IActionResult GetScore()
     {
-        return Ok(_gameService.CalculateScore(GetUserId()));
+        int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+            ?? throw new UnauthorizedAccessException("User id not found in token"));
+
+        return Ok(_gameService.CalculateScore(userId));
     }
 }
 

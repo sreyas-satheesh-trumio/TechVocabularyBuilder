@@ -87,3 +87,5 @@ yarn-error.log*
 # Publish output
 ############################################
 publish/
+
+Migrations/

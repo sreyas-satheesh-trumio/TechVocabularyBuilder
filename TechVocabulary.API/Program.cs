@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Security.Claims;
 using TechVocabulary.API.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,9 @@ builder.Services.Configure<JwtOptions>(jwtSection);
 
 var jwtSettings = jwtSection.Get<JwtOptions>();
 
+if (string.IsNullOrWhiteSpace(jwtSettings?.Key))
+    throw new InvalidOperationException("JWT Key is not configured. Set 'Jwt:Key' in configuration or use user-secrets.");
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -36,7 +40,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = jwtSettings.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(jwtSettings.Key)
-            )
+            ),
+            NameClaimType = ClaimTypes.NameIdentifier,
+            RoleClaimType = ClaimTypes.Role,
+            ClockSkew = TimeSpan.Zero
         };
     });
 

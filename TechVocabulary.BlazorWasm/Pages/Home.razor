@@ -1,17 +1,19 @@
 ﻿@page "/"
-@using TechVocabulary.Contracts.DTOs
 @inject NavigationManager Nav
-@inject HttpClient Http
 
 <div class="home-wrapper">
 
     <!-- HERO -->
     <section class="hero">
-        <h1 class="title">Tech Vocabulary Builder</h1>
+        <div class="badge">🔥 Learn • Play • Master</div>
+
+        <h1 class="title">
+            Tech Vocabulary Builder
+        </h1>
 
         <p class="subtitle">
-            Master technical concepts like <b>API</b>, <b>JWT</b>, <b>Docker</b>  
-            through interactive lessons and fun quizzes.
+            Learn technical concepts like <b>API</b>, <b>JWT</b>, <b>Docker</b>  
+            in a fun way.
         </p>
     </section>
 
@@ -21,15 +23,28 @@
         <div class="card learn-card" @onclick="GoToLearn">
             <div class="icon">📘</div>
             <h3>Learn Topics</h3>
-            <p>Simple explanations with real-world examples.</p>
+            <p>
+                Clear explanations with real-world examples and code snippets.
+            </p>
+            <span class="card-cta">Start Learning →</span>
         </div>
 
         <div class="card game-card" @onclick="GoToInstructions">
             <div class="icon">🎯</div>
             <h3>Guess the Term</h3>
-            <p>Test your knowledge with quick interactive quizzes.</p>
+            <p>
+                Test yourself with fun quizzes and boost your confidence.
+            </p>
+            <span class="card-cta">Play Now →</span>
         </div>
 
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features">
+        <div class="feature">⚡ Quick & Simple</div>
+        <div class="feature">🧠 Learn by Doing</div>
+        <div class="feature">🏆 Score & Improve</div>
     </section>
 
 </div>
@@ -39,7 +54,8 @@
     {
         Nav.NavigateTo("/topics");
     }
-     void GoToInstructions()
+
+    void GoToInstructions()
     {
         Nav.NavigateTo("/game-instructions");
     }

@@ -24,7 +24,7 @@
             <p>Simple explanations with real-world examples.</p>
         </div>
 
-        <div class="card game-card" @onclick="StartGameAsync">
+        <div class="card game-card" @onclick="GoToInstructions">
             <div class="icon">🎯</div>
             <h3>Guess the Term</h3>
             <p>Test your knowledge with quick interactive quizzes.</p>
@@ -39,28 +39,8 @@
     {
         Nav.NavigateTo("/topics");
     }
-
-    async Task StartGameAsync()
+     void GoToInstructions()
     {
-        try
-        {
-            // Call backend to get the first question
-            var question = await Http.GetFromJsonAsync<GameQuestionResponse>("api/game/question");
-
-            if (question != null)
-            {
-                // Navigate to /game page
-                // Later, pass the question via a state service or query string
-                Nav.NavigateTo("/game");
-            }
-            else
-            {
-                Console.WriteLine("Failed to fetch first question.");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching game question: {ex.Message}");
-        }
+        Nav.NavigateTo("/game-instructions");
     }
 }

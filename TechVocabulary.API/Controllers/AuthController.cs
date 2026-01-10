@@ -28,4 +28,18 @@ public class AuthController : ControllerBase
             AccessToken = token
         });
     }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register(RegisterRequest request)
+    {
+        var token = await _authService.RegisterAsync(request);
+
+        if (token == null)
+            return Conflict("Username or email already in use");
+
+        return Created(string.Empty, new RegisterResponse
+        {
+            AccessToken = token
+        });
+    }
 }

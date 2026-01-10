@@ -32,6 +32,26 @@ public class AuthService : IAuthService
         return GenerateToken(user);
     }
 
+    public async Task<string?> RegisterAsync(RegisterRequest request)
+    {
+        if (await _context.EndUsers.AnyAsync(u => u.Username == request.Username || u.Email == request.Email))
+            return null;
+
+        var user = new EndUser
+        {
+            Username = request.Username,
+            FullName = request.FullName,
+            Email = request.Email,
+            Password = PasswordService.Hash(request.Password),
+            Role = UserRole.User
+        };
+
+        _context.EndUsers.Add(user);
+        await _context.SaveChangesAsync();
+
+        return GenerateToken(user);
+    }
+
     private string GenerateToken(EndUser user)
     {
         var claims = new List<Claim>

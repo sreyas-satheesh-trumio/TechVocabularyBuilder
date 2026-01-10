@@ -1,13 +1,17 @@
 @page "/game-instructions"
+
 @inject NavigationManager Nav
 @inject HttpClient Http
+@inject GameStateService GameState
+
 @using TechVocabulary.Contracts.DTOs
 
 <div class="instructions-wrapper">
     <h1 class="title">🎯 Guess the Term</h1>
 
     <p class="subtitle">
-        You will be given a question and 4 options. Each correct answer gives you 1 point. All the best!
+        You will be given a question and 4 options.
+        Each correct answer gives you 1 point. All the best!
     </p>
 
     <ul class="instructions-list">
@@ -25,21 +29,23 @@
 </div>
 
 @code {
-    async Task StartGameAsync()
+    private async Task StartGameAsync()
     {
         try
         {
-            // Call backend to get the first question
-            var question = await Http.GetFromJsonAsync<GameQuestionResponse>("api/game/question");
+            var question =
+                await Http.GetFromJsonAsync<GameQuestionResponse>("api/game/question");
 
-            if (question != null)
+            if (question != null && !question.IsCompleted)
             {
-                // TODO: store question in a GameStateService for later use in /game page
+                GameState.Reset();
+                GameState.CurrentQuestion = question;
+
                 Nav.NavigateTo("/game");
             }
             else
             {
-                Console.WriteLine("Failed to fetch first question.");
+                Console.WriteLine("No questions available.");
             }
         }
         catch (Exception ex)

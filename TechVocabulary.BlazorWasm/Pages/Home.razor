@@ -1,55 +1,66 @@
 ﻿@page "/"
+@using TechVocabulary.Contracts.DTOs
+@inject NavigationManager Nav
+@inject HttpClient Http
 
-<div class="home-container">
-    <h1>Tech Vocabulary Builder 🚀</h1>
+<div class="home-wrapper">
 
-    <p class="subtitle">
-        Learn technical concepts like API, JWT, Docker through
-        simple explanations and fun quizzes.
-    </p>
+    <!-- HERO -->
+    <section class="hero">
+        <h1 class="title">Tech Vocabulary Builder</h1>
 
-    <div class="action-buttons">
-        <a class="btn btn-primary" href="/">
-            📘 Learn Topics
-        </a>
+        <p class="subtitle">
+            Master technical concepts like <b>API</b>, <b>JWT</b>, <b>Docker</b>  
+            through interactive lessons and fun quizzes.
+        </p>
+    </section>
 
-        <a class="btn btn-success" href="/">
-            🎯 Play Guess Game
-        </a>
-    </div>
+    <!-- ACTION CARDS -->
+    <section class="card-section">
+
+        <div class="card learn-card" @onclick="GoToLearn">
+            <div class="icon">📘</div>
+            <h3>Learn Topics</h3>
+            <p>Simple explanations with real-world examples.</p>
+        </div>
+
+        <div class="card game-card" @onclick="StartGameAsync">
+            <div class="icon">🎯</div>
+            <h3>Guess the Term</h3>
+            <p>Test your knowledge with quick interactive quizzes.</p>
+        </div>
+
+    </section>
+
 </div>
 
-<style>
-    .home-container {
-        text-align: center;
-        margin-top: 80px;
+@code {
+    void GoToLearn()
+    {
+        Nav.NavigateTo("/topics");
     }
 
-    .subtitle {
-        font-size: 18px;
-        margin: 20px 0 40px 0;
-        color: #555;
-    }
+    async Task StartGameAsync()
+    {
+        try
+        {
+            // Call backend to get the first question
+            var question = await Http.GetFromJsonAsync<GameQuestionResponse>("api/game/question");
 
-    .action-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
+            if (question != null)
+            {
+                // Navigate to /game page
+                // Later, pass the question via a state service or query string
+                Nav.NavigateTo("/game");
+            }
+            else
+            {
+                Console.WriteLine("Failed to fetch first question.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching game question: {ex.Message}");
+        }
     }
-
-    .btn {
-        padding: 12px 24px;
-        font-size: 16px;
-        border-radius: 6px;
-        text-decoration: none;
-        color: white;
-    }
-
-    .btn-primary {
-        background-color: #007bff;
-    }
-
-    .btn-success {
-        background-color: #28a745;
-    }
-</style>
+}

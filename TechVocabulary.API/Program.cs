@@ -21,7 +21,7 @@ var jwtSection = builder.Configuration.GetSection("Jwt");
 builder.Services.Configure<JwtOptions>(jwtSection);
 
 var jwtSettings = jwtSection.Get<JwtOptions>();
-
+/*
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -39,8 +39,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             )
         };
     });
-
-builder.Services.AddAuthorization();
+*/
+//builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -51,7 +51,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
+//app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

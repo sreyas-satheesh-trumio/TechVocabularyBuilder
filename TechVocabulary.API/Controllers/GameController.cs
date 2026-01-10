@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/game")]
-[Authorize(Roles = "User")]
 public class GameController : ControllerBase
 {
     private readonly IGameService _gameService;
@@ -13,24 +12,27 @@ public class GameController : ControllerBase
         _gameService = gameService;
     }
 
+    private int GetUserId()
+    {
+        return 1; // TEMP
+    }
+
     [HttpGet("question")]
     public IActionResult GetQuestion()
     {
-        int userId = int.Parse(User.FindFirst("UserId").Value);
-        return Ok(_gameService.GetNextQuestion(userId));
+        return Ok(_gameService.GetNextQuestion(GetUserId()));
     }
 
     [HttpPost("answer")]
     public IActionResult ValidateAnswer([FromBody] AnswerRequest request)
     {
-        int userId = int.Parse(User.FindFirst("UserId").Value);
-        return Ok(_gameService.ValidateAnswer(userId, request));
+        return Ok(_gameService.ValidateAnswer(GetUserId(), request));
     }
 
     [HttpGet("score")]
     public IActionResult GetScore()
     {
-        int userId = int.Parse(User.FindFirst("UserId").Value);
-        return Ok(_gameService.CalculateScore(userId));
+        return Ok(_gameService.CalculateScore(GetUserId()));
     }
 }
+

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using TechVocabulary.BlazorWasm;
 using System.Net.Http;
+using TechVocabulary.BlazorWasm.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -17,5 +18,6 @@ builder.Services.AddScoped(sp => new HttpClient
 
 // Register AdminApiService
 builder.Services.AddScoped<AdminApiService>();
+builder.Services.AddScoped<LearningApiService>();
 
 await builder.Build().RunAsync();

@@ -1,0 +1,69 @@
+@page "/learn"
+@using TechVocabulary.BlazorWasm.Services
+@inject LearningApiService LearningService
+
+<h3 class="mb-3">📘 Learn Tech Vocabulary</h3>
+
+<div class="mb-3">
+    <input class="form-control"
+           placeholder="Enter topic name (e.g., API)"
+           @bind="topicName" />
+</div>
+
+<button class="btn btn-primary mb-3" @onclick="SearchTopic">
+    Learn
+</button>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+@if (topic != null)
+{
+    <div class="card shadow">
+        <div class="card-body">
+            <h4 class="card-title">@topic.TopicName</h4>
+
+            <p><strong>Definition:</strong><br />@topic.Definition</p>
+
+            <p><strong>Real World Usage:</strong><br />@topic.RealWorldUsage</p>
+
+            <p><strong>Code Snippet:</strong></p>
+
+            <pre class="bg-light p-3 rounded">
+@topic.CodeSnippet
+            </pre>
+        </div>
+    </div>
+}
+
+@code {
+    private string topicName = string.Empty;
+    private LearningTopicDto? topic;
+    private string errorMessage = string.Empty;
+
+    private async Task SearchTopic()
+    {
+        errorMessage = string.Empty;
+        topic = null;
+
+        if (string.IsNullOrWhiteSpace(topicName))
+        {
+            errorMessage = "Please enter a topic name.";
+            return;
+        }
+
+        try
+        {
+            topic = await LearningService.GetTopicByNameAsync(topicName);
+
+            if (topic == null)
+                errorMessage = "Topic not found.";
+        }
+        catch
+        {
+            errorMessage = "Error fetching topic. Please try again.";
+        }
+    }
+}

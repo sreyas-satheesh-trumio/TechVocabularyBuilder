@@ -1,0 +1,101 @@
+@page "/register"
+@layout AuthLayout
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<div class="register-container">
+    <div class="register-card">
+
+        <h2>Create Account</h2>
+        <p class="subtitle">Join us and start your journey</p>
+
+        <div class="form-group floating">
+            <input type="text" class="form-input" placeholder=" "
+                   @bind="fullName" />
+            <label>Full Name</label>
+        </div>
+
+        <div class="form-group floating">
+            <input type="email" class="form-input" placeholder=" "
+                   @bind="email" />
+            <label>Email Address</label>
+        </div>
+
+        <div class="form-group floating">
+            <input type="text" class="form-input" placeholder=" "
+                   @bind="username" />
+            <label>Username</label>
+        </div>
+
+        <div class="form-group floating">
+            <input type="password" class="form-input" placeholder=" "
+                   @bind="password" />
+            <label>Password</label>
+        </div>
+
+        <div class="form-group floating">
+            <input type="password" class="form-input" placeholder=" "
+                   @bind="confirmPassword" />
+            <label>Confirm Password</label>
+        </div>
+
+        <button type="button" class="btn-register" @onclick="RegisterUser">
+            Create Account
+        </button>
+
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <p>@message</p>
+        }
+
+        <div class="register-link">
+            Already have an account?
+            <a href="/login">Back to Login</a>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    private string fullName = "";
+    private string email = "";
+    private string username = "";
+    private string password = "";
+    private string confirmPassword = "";
+
+    private string message = "";
+
+    private async Task RegisterUser()
+    {
+        var payload = new
+        {
+            FullName = fullName,
+            Email = email,
+            Username = username,
+            Password = password,
+            ConfirmPassword = confirmPassword
+        };
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync(
+                "api/auth/register", payload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                message = "Registration successful";
+                Navigation.NavigateTo("/login");
+            }
+            else
+            {
+                message = "Registration failed";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = "Cannot reach backend API";
+            Console.WriteLine(ex.Message);
+        }
+    }
+}

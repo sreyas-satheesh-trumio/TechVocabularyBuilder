@@ -1,0 +1,93 @@
+@page "/game"
+@using TechVocabulary.Contracts.DTOs
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject GameStateService GameState
+
+@if (GameState.CurrentQuestion == null)
+{
+    <div class="loading">Loading question...</div>
+}
+else
+{
+    <div class="game-container">
+        <div class="game-card">
+
+            <h2 class="game-title">🧠 Guess the Term</h2>
+
+            <!-- Question Section -->
+            <div class="question-section">
+                <div class="question-block">
+                    <span class="label">Definition</span>
+                    <p>@GameState.CurrentQuestion.Definition</p>
+                </div>
+
+                <div class="question-block">
+                    <span class="label">Real World Usage</span>
+                    <p>@GameState.CurrentQuestion.RealWorldUsage</p>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(GameState.CurrentQuestion.CodeSnippet))
+                {
+                    <div class="code-section">
+                        <span class="label">Code Snippet</span>
+                        <pre>@GameState.CurrentQuestion.CodeSnippet</pre>
+                    </div>
+                }
+            </div>
+
+            <!-- Options -->
+            <div class="options-section">
+                @foreach (var option in GameState.CurrentQuestion.Options)
+                {
+                    <div class="option-card @(selectedOption == option ? "selected" : "")"
+                         @onclick="() => SelectOption(option)">
+                        <span class="option-radio"></span>
+                        <span class="option-text">@option</span>
+                    </div>
+                }
+            </div>
+
+            <!-- Next Button -->
+            <button class="next-btn"
+                    disabled="@string.IsNullOrEmpty(selectedOption)"
+                    @onclick="SubmitAnswerAsync">
+                Next →
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    private string? selectedOption;
+
+    void SelectOption(string option)
+    {
+        selectedOption = option;
+    }
+
+    async Task SubmitAnswerAsync()
+    {
+        var answerRequest = new AnswerRequest
+        {
+            TopicId = GameState.CurrentQuestion!.TopicId,
+            SelectedAnswer = selectedOption!
+        };
+
+        await Http.PostAsJsonAsync("api/game/answer", answerRequest);
+
+        var nextQuestion = await Http.GetFromJsonAsync<GameQuestionResponse>(
+            "api/game/question");
+
+        selectedOption = null;
+
+        if (nextQuestion != null && !nextQuestion.IsCompleted)
+        {
+            GameState.CurrentQuestion = nextQuestion;
+        }
+        else
+        {
+            Nav.NavigateTo("/game-result");
+        }
+    }
+}

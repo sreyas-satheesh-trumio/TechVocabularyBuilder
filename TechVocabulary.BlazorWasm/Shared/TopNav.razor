@@ -1,0 +1,29 @@
+@namespace TechVocabularyBlazorWasm.Shared
+
+<nav class="top-nav">
+    <div class="nav-left">
+        <span class="logo" @onclick="GoHome">
+            TechVocabulary
+        </span>
+    </div>
+
+    <div class="nav-right">
+        <button class="login-btn" @onclick="GoToLogin">
+            Login
+        </button>
+    </div>
+</nav>
+
+@code {
+    [Inject] NavigationManager Nav { get; set; } = default!;
+
+    void GoHome()
+    {
+        Nav.NavigateTo("/");
+    }
+
+    void GoToLogin()
+    {
+        Nav.NavigateTo("/login");
+    }
+}

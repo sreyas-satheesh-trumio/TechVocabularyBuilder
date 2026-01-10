@@ -1,0 +1,120 @@
+@page "/game-result"
+
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<div class="result-container">
+    <div class="result-card">
+
+        @if (score == null)
+        {
+            <div class="loading">Calculating your score...</div>
+        }
+        else
+        {
+            <!-- 🎊 Confetti -->
+            <div class="confetti">
+                <span>🎉</span><span>🎊</span><span>✨</span><span>🎉</span>
+            </div>
+
+            <!-- 🏅 Badge -->
+            <div class="badge">
+                <span class="emoji">@BadgeEmoji</span>
+                <h2>@BadgeText</h2>
+            </div>
+
+            <!-- 📊 Score Summary -->
+            <div class="score-summary">
+                <div class="score-item">
+                    <span>Total Questions</span>
+                    <b>@score.TotalQuestions</b>
+                </div>
+
+                <div class="score-item">
+                    <span>Correct Answers</span>
+                    <b>@score.CorrectAnswers</b>
+                </div>
+
+                <div class="score-final">
+                    <span>Your Score</span>
+                    <h1>@score.TotalScore</h1>
+                </div>
+            </div>
+
+            <!-- 📈 Progress Bar -->
+            <div class="progress-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill"
+                         style="width:@ScorePercentage%">
+                    </div>
+                </div>
+                <span class="progress-text">@ScorePercentage%</span>
+            </div>
+
+            <!-- 🎯 Actions -->
+            <div class="action-buttons">
+                <button class="btn-primary" @onclick="PlayAgain">
+                    🔄 Play Again
+                </button>
+
+                <button class="btn-secondary" @onclick="ViewAnswers">
+                    🧾 Review Answers
+                </button>
+
+                <button class="btn-home" @onclick="GoHome">
+                    🏠 Home
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private GameScoreResponse? score;
+
+    protected override async Task OnInitializedAsync()
+    {
+        score = await Http.GetFromJsonAsync<GameScoreResponse>(
+            "api/game/score");
+    }
+
+    // 📈 Percentage
+    private int ScorePercentage =>
+        score == null || score.TotalQuestions == 0
+            ? 0
+            : (int)((double)score.CorrectAnswers / score.TotalQuestions * 100);
+
+    // 🏅 Badge logic
+    private string BadgeEmoji =>
+        ScorePercentage switch
+        {
+            >= 90 => "🏆",
+            >= 70 => "🥇",
+            >= 50 => "🥈",
+            _ => "🎯"
+        };
+
+    private string BadgeText =>
+        ScorePercentage switch
+        {
+            >= 90 => "Quiz Master!",
+            >= 70 => "Great Job!",
+            >= 50 => "Good Effort!",
+            _ => "Keep Practicing!"
+        };
+
+    void PlayAgain()
+    {
+        Nav.NavigateTo("/game-instructions");
+    }
+
+    void ViewAnswers()
+    {
+        Nav.NavigateTo("/game-review"); // page to be built next
+    }
+
+    void GoHome()
+    {
+        Nav.NavigateTo("/");
+    }
+}

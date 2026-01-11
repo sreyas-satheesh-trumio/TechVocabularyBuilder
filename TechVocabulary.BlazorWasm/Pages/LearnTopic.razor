@@ -1,16 +1,19 @@
 @page "/learn"
 @using TechVocabulary.BlazorWasm.Services
+@using TechVocabulary.Contracts.DTOs
+
 @inject LearningApiService LearningService
 
 <h3 class="mb-3">📘 Learn Tech Vocabulary</h3>
 
+<!-- SEARCH -->
 <div class="mb-3">
     <input class="form-control"
-           placeholder="Enter topic name (e.g., API)"
+           placeholder="Search topic (e.g., API)"
            @bind="topicName" />
 </div>
 
-<button class="btn btn-primary mb-3" @onclick="SearchTopic">
+<button class="btn btn-primary mb-4" @onclick="SearchTopic">
     Learn
 </button>
 
@@ -19,6 +22,31 @@
     <div class="alert alert-danger">@errorMessage</div>
 }
 
+<hr />
+
+<!-- TOPIC LIST -->
+<h5 class="mb-3">Available Topics</h5>
+
+@if (topics == null)
+{
+    <p>Loading topics...</p>
+}
+else
+{
+    <div class="topic-grid">
+        @foreach (var t in topics)
+        {
+            <div class="topic-card"
+                 @onclick="() => LoadTopic(t.TopicName)">
+                <span class="topic-text">@t.TopicName</span>
+                <span class="ripple"></span>
+            </div>
+        }
+    </div>
+}
+
+
+<!-- TOPIC DETAILS -->
 @if (topic != null)
 {
     <div class="card shadow">
@@ -41,7 +69,13 @@
 @code {
     private string topicName = string.Empty;
     private LearningTopicDto? topic;
+    private List<LearningTopicListDto>? topics;
     private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        topics = await LearningService.GetAllTopicsAsync();
+    }
 
     private async Task SearchTopic()
     {
@@ -54,9 +88,14 @@
             return;
         }
 
+        await LoadTopic(topicName);
+    }
+
+    private async Task LoadTopic(string name)
+    {
         try
         {
-            topic = await LearningService.GetTopicByNameAsync(topicName);
+            topic = await LearningService.GetTopicByNameAsync(name);
 
             if (topic == null)
                 errorMessage = "Topic not found.";
@@ -67,3 +106,4 @@
         }
     }
 }
+

@@ -52,4 +52,3 @@ public class GameController : ControllerBase
         return Ok(_gameService.CalculateScore(userId));
     }
 }
-

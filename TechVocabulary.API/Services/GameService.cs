@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TechVocabulary.Contracts.DTOs;
+
 public class GameService : IGameService
 {
     private readonly AppDbContext _db;
@@ -14,20 +15,17 @@ public class GameService : IGameService
     // -----------------------------
     public GameQuestionResponse GetNextQuestion(int userId)
     {
-        // Get already attempted topic IDs for the user
         var attemptedTopicIds = _db.GameProgresses
             .Where(g => g.UserId == userId)
             .Select(g => g.TopicId)
             .ToList();
 
-        // Get next unattempted topic
-        var topic = _db.Topics
+        var remainingTopics = _db.Topics
             .Where(t => !attemptedTopicIds.Contains(t.TopicId))
-            .OrderBy(t => Guid.NewGuid())
-            .FirstOrDefault();
+            .ToList();
 
-        // If no topics left
-        if (topic == null)
+        // No questions left
+        if (!remainingTopics.Any())
         {
             return new GameQuestionResponse
             {
@@ -35,18 +33,28 @@ public class GameService : IGameService
             };
         }
 
-        // Build options (topic names)
+        var topic = remainingTopics
+            .OrderBy(_ => Guid.NewGuid())
+            .First();
+
+        // Build option list safely
         var options = _db.Topics
-            .OrderBy(t => Guid.NewGuid())
-            .Take(4)
             .Select(t => t.TopicName)
+            .Distinct()
+            .OrderBy(_ => Guid.NewGuid())
+            .Take(3)
             .ToList();
 
         // Ensure correct answer is included
         if (!options.Contains(topic.TopicName))
         {
-            options[0] = topic.TopicName;
+            options.Add(topic.TopicName);
         }
+
+        // Shuffle again
+        options = options
+            .OrderBy(_ => Guid.NewGuid())
+            .ToList();
 
         return new GameQuestionResponse
         {
@@ -66,30 +74,36 @@ public class GameService : IGameService
     {
         var topic = _db.Topics.FirstOrDefault(t => t.TopicId == request.TopicId);
         if (topic == null)
-            throw new Exception("Invalid topic");
+        {
+            return new AnswerResultResponse
+            {
+                IsCorrect = false
+            };
+        }
 
-        // Prevent duplicate attempts
         bool alreadyAttempted = _db.GameProgresses.Any(g =>
             g.UserId == userId && g.TopicId == request.TopicId);
 
         if (alreadyAttempted)
-            throw new Exception("Topic already attempted");
+        {
+            return new AnswerResultResponse
+            {
+                IsCorrect = false
+            };
+        }
 
-        bool isCorrect = topic.TopicName
-            .Equals(request.SelectedAnswer, StringComparison.OrdinalIgnoreCase);
+        bool isCorrect = topic.TopicName.Equals(
+            request.SelectedAnswer,
+            StringComparison.OrdinalIgnoreCase);
 
-        int score = isCorrect ? 1 : 0;
-
-        // Save attempt
         _db.GameProgresses.Add(new GameProgress
         {
             UserId = userId,
             TopicId = topic.TopicId,
-            Score = score,
+            Score = isCorrect ? 1 : 0,
             AttemptedAt = DateTime.UtcNow
         });
 
-        // If correct, mark as learned
         if (isCorrect)
         {
             _db.TopicsLearned.Add(new TopicLearned
@@ -117,15 +131,11 @@ public class GameService : IGameService
             .Where(g => g.UserId == userId)
             .ToList();
 
-        int totalQuestions = attempts.Count;
-        int correctAnswers = attempts.Count(a => a.Score > 0);
-        int totalScore = correctAnswers; // 1 mark per correct answer
-
         return new GameScoreResponse
         {
-            TotalQuestions = totalQuestions,
-            CorrectAnswers = correctAnswers,
-            TotalScore = totalScore
+            TotalQuestions = attempts.Count,
+            CorrectAnswers = attempts.Count(a => a.Score > 0),
+            TotalScore = attempts.Count(a => a.Score > 0)
         };
     }
 }

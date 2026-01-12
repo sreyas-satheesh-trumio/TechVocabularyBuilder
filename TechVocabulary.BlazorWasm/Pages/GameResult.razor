@@ -53,9 +53,7 @@
 
             <!-- 🎯 Actions -->
             <div class="action-buttons">
-                <button class="btn-primary" @onclick="PlayAgain">
-                    🔄 Play Again
-                </button>
+               
 
                 <button class="btn-secondary" @onclick="ViewAnswers">
                     🧾 Review Answers
@@ -103,10 +101,7 @@
             _ => "Keep Practicing!"
         };
 
-    void PlayAgain()
-    {
-        Nav.NavigateTo("/game-instructions");
-    }
+    
 
     void ViewAnswers()
     {
